@@ -151,12 +151,53 @@ export default class Configuration {
     }
     reporterConfig['metrics'] = options.metrics;
     reporterConfig['logger'] = options.logger;
+     //Aruna started
+     if(config.reporter.ORD){
+      if(config.reporter.ORD.collectorEndpoint){
+        senderConfig['endpoint'] = config.reporter.ORD.collectorEndpoint;
+      }
+      if (config.reporter.ORD.agentHost) {
+        senderConfig['host'] = config.reporter.ORD.agentHost;
+      }
+
+      if (config.reporter.ORD.agentPort) {
+        senderConfig['port'] = config.reporter.ORD.agentPort;
+      }
+      var sender = config.reporter.ORD.httpSenderEnabled ? new _http_sender2.default(senderConfig) : new _udp_sender2.default(senderConfig);
+      var remoteReporter1 = new _remote_reporter2.default(sender, reporterConfig);
+      reporters.push(remoteReporter1);
+    }
+    if(config.reporter.ARD){
+      if(config.reporter.ARD.collectorEndpoint){
+        senderConfig['endpoint'] = config.reporter.ARD.collectorEndpoint;
+      }
+      if (config.reporter.ARD.agentHost) {
+        senderConfig['host'] = config.reporter.ARD.agentHost;
+      }
+
+      if (config.reporter.ARD.agentPort) {
+        senderConfig['port'] = config.reporter.ARD.agentPort;
+      }
+      var sender1 = config.reporter.ARD.httpSenderEnabled ? new _http_sender2.default(senderConfig) : new _udp_sender2.default(senderConfig);
+      var remoteReporter2 = new _remote_reporter2.default(sender1, reporterConfig);
+      reporters.push(remoteReporter2);
+    }
+    if(config.reporter.collectorEndpoint || config.reporter.agentHost){
+      var sender2 = isHTTPSender ? new _http_sender2.default(senderConfig) : new _udp_sender2.default(senderConfig);
+      var remoteReporter = new _remote_reporter2.default(sender2, reporterConfig);
+      if (reporters.length == 0) {
+        return remoteReporter;
+      }
+      reporters.push(remoteReporter);
+    }
+    //Aruna Ended
+    /* 
     let sender = isHTTPSender ? new HTTPSender(senderConfig) : new UDPSender(senderConfig);
     let remoteReporter = new RemoteReporter(sender, reporterConfig);
     if (reporters.length == 0) {
       return remoteReporter;
     }
-    reporters.push(remoteReporter);
+    reporters.push(remoteReporter); */
     return new CompositeReporter(reporters);
   }
 
